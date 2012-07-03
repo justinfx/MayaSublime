@@ -4,28 +4,34 @@ import time
 import re
 
 _settings = {
-	'port': 7001,
+	'mel_port': 7001,
+	'py_port': 7002
 }
 
 class SendToMayaCommand(sublime_plugin.TextCommand):  
 
-	CMD_TEMPLATE = "import __main__; exec('''%s''', __main__.__dict__, __main__.__dict__)"
+	PY_CMD_TEMPLATE = "import __main__; exec('''%s''', __main__.__dict__, __main__.__dict__)"
 
-	def run(self, edit):  
+	def run(self, edit, lang="python"): 
+
+		port = _settings['py_port'] if lang=='python' else _settings['mel_port']
+
 		snips = []
 		for sel in self.view.sel():
 			snips.extend(line for line in re.split(r'[\r\n]+', self.view.substr(sel)) 
-							if not line.startswith('#'))
+							if not re.match(r'^//|#', line))
 
-		cmd = '\n'.join(snips)
-		if not cmd:
+		mCmd = str('\n'.join(snips))
+		if not mCmd:
 			return
-		print cmd
+		
+		print 'Sending:\n%s...\n' % mCmd[:200]
 
-		mCmd = self.CMD_TEMPLATE % str(cmd)
+		if lang == 'python':
+			mCmd = self.PY_CMD_TEMPLATE % mCmd
 
 		try:
-			c = Telnet("", int(_settings['port']), timeout=3)
+			c = Telnet("", int(port), timeout=3)
 			c.write(mCmd)
 		except Exception, e:
 			sublime.error_message("Failed to communicate with Maya:\n%s" % str(e))
@@ -42,7 +48,8 @@ def settings_obj():
 def sync_settings():
 	global _settings
 	so = settings_obj()
-	_settings['port'] = so.get('python_command_port')
+	_settings['py_port'] = so.get('python_command_port')
+	_settings['mel_port'] = so.get('mel_command_port')
 	
 
 

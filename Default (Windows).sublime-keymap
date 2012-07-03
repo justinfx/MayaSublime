@@ -1,12 +1,36 @@
 [
+	
+	//
+	// PYTHON keymaps
+	//
 	{ 
 		"keys": ["ctrl+enter"], 
 		"command": "send_to_maya",
+		"args": {"lang": "python"},
 		"context": [{"key": "selector", "operator": "equal", "operand": "source.python"}]
 	},
 	{ 
 		"keys": ["ctrl+keypad_enter"], 
 		"command": "send_to_maya",
+		"args": {"lang": "python"},
 		"context": [{"key": "selector", "operator": "equal", "operand": "source.python"}]
+	},
+
+	
+	//
+	// MEL keymaps
+	//
+	{ 
+		"keys": ["ctrl+enter"], 
+		"command": "send_to_maya",
+		"args": {"lang": "mel"},
+		"context": [{"key": "selector", "operator": "equal", "operand": "source.MEL"}]
+	},
+	{ 
+		"keys": ["ctrl+keypad_enter"], 
+		"command": "send_to_maya",
+		"args": {"lang": "mel"},
+		"context": [{"key": "selector", "operator": "equal", "operand": "source.MEL"}]
 	}
+
 ]

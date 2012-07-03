@@ -1,5 +1,9 @@
 {
+	
 	// Maya commandPort to communicate via Python
-	"python_command_port" : 7002
+	"python_command_port" : 7002,
+
+	// Maya commandPort to communicate via MEL
+	"mel_command_port" : 7001
 
 }
