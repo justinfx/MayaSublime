@@ -24,8 +24,8 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 
 		mCmd = self.CMD_TEMPLATE % str(cmd)
 
-		c = Telnet("", int(_settings['port']), timeout=3)
 		try:
+			c = Telnet("", int(_settings['port']), timeout=3)
 			c.write(mCmd)
 		except Exception, e:
 			sublime.error_message("Failed to communicate with Maya:\n%s" % str(e))
@@ -37,7 +37,7 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 
 
 def settings_obj():
-	return sublime.load_settings("Maya.sublime-settings")
+	return sublime.load_settings("MayaSublime.sublime-settings")
 
 def sync_settings():
 	global _settings
@@ -46,6 +46,6 @@ def sync_settings():
 	
 
 
-settings_obj().clear_on_change("Maya.settings")
-settings_obj().add_on_change("Maya.settings", sync_settings)
+settings_obj().clear_on_change("MayaSublime.settings")
+settings_obj().add_on_change("MayaSublime.settings", sync_settings)
 sync_settings()
