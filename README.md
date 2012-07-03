@@ -1,7 +1,7 @@
 # MayaSublime
 ### A Sublime Text 2 plugin
 
-Send selected code snippets to Maya via commandPort
+Send selected Python code snippets to Maya via commandPort
 
 ----------
 
