@@ -1,0 +1,5 @@
+{
+	// Maya commandPort to communicate via Python
+	"python_command_port" : 7002
+
+}

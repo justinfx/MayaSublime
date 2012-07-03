@@ -1,0 +1,36 @@
+[
+    {
+        "caption": "Maya: Send Selection to Maya",
+        "command": "send_to_maya"
+    },
+    {
+        "caption": "Preferences: Maya Settings",
+        "command": "open_file", "args":
+        {
+            "file": "${packages}/Maya/Maya.sublime-settings"}
+        },
+    {
+        "caption": "Preferences: Maya Key Bindings",
+        "command": "open_file", "args":
+        {
+            "file": "${packages}/Maya/Default (Windows).sublime-keymap",
+            "platform": "Windows"
+        }
+    },
+    {
+        "caption": "Preferences: Maya Key Bindings",
+        "command": "open_file", "args":
+        {
+            "file": "${packages}/Maya/Default (OSX).sublime-keymap",
+            "platform": "OSX"
+        }
+    },
+    {
+        "caption": "Preferences: Maya Key Bindings",
+        "command": "open_file", "args":
+        {
+            "file": "${packages}/Maya/Default (Linux).sublime-keymap",
+            "platform": "Linux"
+        }
+    }
+]
