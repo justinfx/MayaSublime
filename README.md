@@ -19,3 +19,17 @@ Send selected MEL/Python code snippets to Maya via commandPort
 Simply select some code in a mel or python script, and hit `ctrl+return`. 
 A socket conncetion will be made to a running Maya instance on the configured port matching mel or python, and the code will be 
 run in Maya's environment.
+
+As an example, if you want to open a commandPort on port 7002 for python (the default port in the config), you can do the following:
+
+```python
+# if it was already open under another configuration
+cmds.commandPort(name=":7002", close=True)
+
+# now open a new port
+cmds.commandPort(name=":7002", sourceType="python")
+
+# or open some random MEL port (make sure you change it to this port in your config file)
+cmds.commandPort(name=":10000", sourceType="mel")
+
+```
