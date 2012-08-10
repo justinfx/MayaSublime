@@ -18,7 +18,8 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 
 		snips = []
 		for sel in self.view.sel():
-			snips.extend(line for line in re.split(r'[\r\n]+', self.view.substr(sel)) 
+			snips.extend(line.replace(r"'''", r"\'\'\'") for line in 
+							re.split(r'[\r\n]+', self.view.substr(sel)) 
 							if not re.match(r'^//|#', line))
 
 		mCmd = str('\n'.join(snips))
