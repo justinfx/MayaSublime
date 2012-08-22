@@ -1,5 +1,8 @@
 {
 	
+	// Maya commandPort HOST name (127.0.0.1, ...)
+	"maya_hostname": "127.0.0.1",
+
 	// Maya commandPort to communicate via Python
 	"python_command_port" : 7002,
 

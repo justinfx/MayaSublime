@@ -4,8 +4,9 @@ import time
 import re
 
 _settings = {
-	'mel_port': 7001,
-	'py_port': 7002
+	'host'		: '127.0.0.1',
+	'mel_port'	: 7001,
+	'py_port'	: 7002
 }
 
 class SendToMayaCommand(sublime_plugin.TextCommand):  
@@ -14,6 +15,7 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 
 	def run(self, edit, lang="python"): 
 
+		host = _settings['host'] 
 		port = _settings['py_port'] if lang=='python' else _settings['mel_port']
 
 		snips = []
@@ -31,16 +33,22 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 		if lang == 'python':
 			mCmd = self.PY_CMD_TEMPLATE % mCmd
 
+		c = None
+
 		try:
-			c = Telnet("", int(port), timeout=3)
+			c = Telnet(host, int(port), timeout=3)
 			c.write(mCmd)
 		except Exception, e:
-			sublime.error_message("Failed to communicate with Maya:\n%s" % str(e))
+			err = str(e)
+			sublime.error_message(
+				"Failed to communicate with Maya (%(host)s:%(port)s)):\n%(err)s" % locals()
+			)
 			raise
 		else:
 			time.sleep(.1)
 		finally:
-			c.close()
+			if c is not None:
+				c.close()
 
 
 def settings_obj():
@@ -49,8 +57,9 @@ def settings_obj():
 def sync_settings():
 	global _settings
 	so = settings_obj()
-	_settings['py_port'] = so.get('python_command_port')
-	_settings['mel_port'] = so.get('mel_command_port')
+	_settings['host'] 		= so.get('maya_hostname')
+	_settings['py_port'] 	= so.get('python_command_port')
+	_settings['mel_port'] 	= so.get('mel_command_port')
 	
 
 
