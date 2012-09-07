@@ -24,13 +24,13 @@
 		"keys": ["ctrl+enter"], 
 		"command": "send_to_maya",
 		"args": {"lang": "mel"},
-		"context": [{"key": "selector", "operator": "equal", "operand": "source.MEL"}]
+		"context": [{"key": "selector", "operator": "equal", "operand": "source.mel"}]
 	},
 	{ 
 		"keys": ["ctrl+keypad_enter"], 
 		"command": "send_to_maya",
 		"args": {"lang": "mel"},
-		"context": [{"key": "selector", "operator": "equal", "operand": "source.MEL"}]
+		"context": [{"key": "selector", "operator": "equal", "operand": "source.mel"}]
 	}
 
 ]
