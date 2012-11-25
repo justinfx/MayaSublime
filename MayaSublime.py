@@ -11,7 +11,7 @@ _settings = {
 
 class SendToMayaCommand(sublime_plugin.TextCommand):  
 
-	PY_CMD_TEMPLATE = "import __main__; exec('''%s''', __main__.__dict__, __main__.__dict__)"
+	PY_CMD_TEMPLATE = "import traceback\nimport __main__\ntry:\n\texec('''%s''', __main__.__dict__, __main__.__dict__)\nexcept:\n\ttraceback.print_exc()"
 
 	def run(self, edit, lang="python"): 
 
@@ -21,7 +21,7 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 		snips = []
 		for sel in self.view.sel():
 			snips.extend(line.replace(r"'''", r"\'\'\'") for line in 
-							re.split(r'[\r\n]+', self.view.substr(sel)) 
+							re.split(r'[\r]+', self.view.substr(sel)) 
 							if not re.match(r'^//|#', line))
 
 		mCmd = str('\n'.join(snips))
