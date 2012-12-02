@@ -13,13 +13,44 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 
 	PY_CMD_TEMPLATE = "import traceback\nimport __main__\ntry:\n\texec('''%s''', __main__.__dict__, __main__.__dict__)\nexcept:\n\ttraceback.print_exc()"
 
-	def run(self, edit, lang="python"): 
+	def run(self, edit): 
+
+		
+		syntax = self.view.settings().get('syntax')
+
+		if re.search(r'python', syntax, re.I):
+			lang = 'python'
+		elif re.search(r'mel', syntax, re.I):
+			lang = 'mel'		
 
 		host = _settings['host'] 
 		port = _settings['py_port'] if lang=='python' else _settings['mel_port']
 
+		selections = self.view.sel() # Returns type sublime.RegionSet
+		selSize = 0
+		for sel in selections:
+			if not sel.empty():
+				selSize += 1
+
 		snips = []
-		for sel in self.view.sel():
+
+		if selSize == 0:
+			print "Nothing Selected, Attempting to Source/Import Current File"
+			if self.view.is_dirty():
+				sublime.error_message("Save Changes Before Maya Source/Import")
+			else:
+				file_path = self.view.file_name()
+				if file_path is not None:
+					file_name = re.split('\\\\|/', file_path)[-1]
+					module_name = file_name.split('.')[0] # for sourcing if nothing is selected
+					
+					if lang == 'python':
+						snips.append('import {0}\nreload({0})'.format(module_name))
+					else:
+						snips.append('rehash; source {0};'.format(module_name))
+					#print "SNIPS:", snips
+		
+		for sel in selections:
 			snips.extend(line.replace(r"'''", r"\'\'\'") for line in 
 							re.split(r'[\r]+', self.view.substr(sel)) 
 							if not re.match(r'^//|#', line))
