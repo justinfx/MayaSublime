@@ -2,6 +2,7 @@ import sublime, sublime_plugin
 from telnetlib import Telnet
 import time
 import re
+import os.path
 
 _settings = {
 	'host'		: '127.0.0.1',
@@ -41,8 +42,8 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 			else:
 				file_path = self.view.file_name()
 				if file_path is not None:
-					file_name = re.split('\\\\|/', file_path)[-1]
-					module_name = file_name.split('.')[0] # for sourcing if nothing is selected
+					file_name = os.path.basename(file_path)
+					module_name = os.path.splitext(file_name)[0]
 					
 					if lang == 'python':
 						snips.append('import {0}\nreload({0})'.format(module_name))
