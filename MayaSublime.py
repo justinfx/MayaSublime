@@ -22,7 +22,10 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 		if re.search(r'python', syntax, re.I):
 			lang = 'python'
 		elif re.search(r'mel', syntax, re.I):
-			lang = 'mel'		
+			lang = 'mel'
+		else:
+			print 'No Maya Recognized Language Found'
+			return		
 
 		host = _settings['host'] 
 		port = _settings['py_port'] if lang=='python' else _settings['mel_port']
