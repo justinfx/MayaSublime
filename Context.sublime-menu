@@ -1,0 +1,7 @@
+[   
+    {"id": "end"},  
+    {
+    	"command": "send_to_maya", 
+    	"caption": "Send to Maya"
+    }
+]
