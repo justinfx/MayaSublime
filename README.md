@@ -17,7 +17,6 @@ Send selected MEL/Python code snippets or whole files to Maya via commandPort
 ### Usage
 
 To send a snippet, simply select some code in a mel or python script, and hit `ctrl+return`, or right click and choose "Send To Maya".
-To source the current MEL file, or import/reload the current python module, do the same without a selection.
 A socket conncetion will be made to a running Maya instance on the configured port matching mel or python, and the code will be 
 run in Maya's environment.
 
