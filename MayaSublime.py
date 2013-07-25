@@ -38,21 +38,22 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 
 		snips = []
 
-		# if selSize == 0:
-		# 	print "Nothing Selected, Attempting to Source/Import Current File"
-		# 	if self.view.is_dirty():
-		# 		sublime.error_message("Save Changes Before Maya Source/Import")
-		# 	else:
-		# 		file_path = self.view.file_name()
-		# 		if file_path is not None:
-		# 			file_name = os.path.basename(file_path)
-		# 			module_name = os.path.splitext(file_name)[0]
+		if selSize == 0:
+		 	print "Nothing Selected, Attempting to Source/Import Current File"
+		 	if self.view.is_dirty():
+		 		sublime.error_message("Save Changes Before Maya Source/Import")
+		 	else:
+		 		file_path = self.view.file_name()
+		 		if file_path is not None:
+		 			file_name = os.path.basename(file_path)
+		 			module_name = os.path.splitext(file_name)[0]
 					
-		# 			if lang == 'python':
-		# 				snips.append('import {0}\nreload({0})'.format(module_name))
-		# 			else:
-		# 				snips.append('rehash; source {0};'.format(module_name))
-		# 			#print "SNIPS:", snips
+		 			if lang == 'python':
+		 				snips.append('import sys\nsys.path.append( \'{0}\' )'.format( os.path.dirname(os.path.realpath(file_path)) ))
+		 				snips.append('import {0}\nreload({0})'.format(module_name))
+		 			else:
+		 				snips.append('rehash; source {0};'.format(module_name))
+		 			#print "SNIPS:", snips
 		
 		for sel in selections:
 			snips.extend(line.replace(r"'''", r"\'\'\'") for line in 
