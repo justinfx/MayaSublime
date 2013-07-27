@@ -2,6 +2,7 @@ import sublime, sublime_plugin
 from telnetlib import Telnet
 import time
 import re
+import textwrap
 import os.path
 
 _settings = {
@@ -12,14 +13,15 @@ _settings = {
 
 class SendToMayaCommand(sublime_plugin.TextCommand):  
 
-	PY_CMD_TEMPLATE = "import traceback\n" \
-					  "import __main__\n" \
-					  "try:\n" \
-						"\t{0}(r'''{1}''', __main__.__dict__, __main__.__dict__)\n" \
-					  "except:\n" \
-					  	"\ttraceback.print_exc()"
+	PY_CMD_TEMPLATE = textwrap.dedent('''
+		import traceback
+		import __main__
+		try:
+			{0}({1!r}, __main__.__dict__, __main__.__dict__)
+		except:
+			traceback.print_exc() 
+	''')
 
-	RX_NEWLINE = re.compile(r'[\r\n]+')
 	RX_COMMENT = re.compile(r'^\s*(//|#)')
 
 	def run(self, edit): 
@@ -70,8 +72,7 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 			execType = 'exec'
 
 			for sel in selections:
-				snips.extend(line.replace(r"'''", r"\'\'\'") for line in 
-								self.RX_NEWLINE.split(self.view.substr(sel)) 
+				snips.extend(line for line in self.view.substr(sel).splitlines() 
 								if not self.RX_COMMENT.match(line))
 
 		mCmd = str('\n'.join(snips))
