@@ -2,6 +2,7 @@ import sublime, sublime_plugin
 from telnetlib import Telnet
 import time
 import re
+import textwrap
 import os.path
 
 _settings = {
@@ -12,7 +13,16 @@ _settings = {
 
 class SendToMayaCommand(sublime_plugin.TextCommand):  
 
-	PY_CMD_TEMPLATE = "import traceback\nimport __main__\ntry:\n\texec('''%s''', __main__.__dict__, __main__.__dict__)\nexcept:\n\ttraceback.print_exc()"
+	PY_CMD_TEMPLATE = textwrap.dedent('''
+		import traceback
+		import __main__
+		try:
+			{0}({1!r}, __main__.__dict__, __main__.__dict__)
+		except:
+			traceback.print_exc() 
+	''')
+
+	RX_COMMENT = re.compile(r'^\s*(//|#)')
 
 	def run(self, edit): 
 
@@ -39,49 +49,57 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 		snips = []
 
 		if selSize == 0:
-		 	print "Nothing Selected, Attempting to Source/Import Current File"
-		 	if self.view.is_dirty():
-		 		sublime.error_message("Save Changes Before Maya Source/Import")
-		 	else:
-		 		file_path = self.view.file_name()
-		 		if file_path is not None:
-		 			file_name = os.path.basename(file_path)
-		 			module_name = os.path.splitext(file_name)[0]
-					
-		 			if lang == 'python':
-		 				snips.append('import sys\nsys.path.append( \'{0}\' )'.format( os.path.dirname(os.path.realpath(file_path)) ))
-		 				snips.append('import {0}\nreload({0})'.format(module_name))
-		 			else:
-		 				snips.append('rehash; source {0};'.format(module_name))
-		 			#print "SNIPS:", snips
+
+			execType = 'execfile'
+
+			print "Nothing Selected, Attempting to exec entire file"
+
+			if self.view.is_dirty():
+				sublime.error_message("Save Changes Before Maya Source/Import")
+				return 
+
+			file_path = self.view.file_name()
+			if file_path is None:
+				sublime.error_message("File must be saved before sending to Maya")
+				return
+
+			if lang == 'python':
+				snips.append(file_path)
+			else:
+				snips.append('rehash; source "{0}";'.format(file_path))
 		
-		for sel in selections:
-			snips.extend(line.replace(r"'''", r"\'\'\'") for line in 
-							re.split(r'[\r]+', self.view.substr(sel)) 
-							if not re.match(r'^//|#', line))
+		else:
+			execType = 'exec'
+
+			for sel in selections:
+				snips.extend(line for line in self.view.substr(sel).splitlines() 
+								if not self.RX_COMMENT.match(line))
 
 		mCmd = str('\n'.join(snips))
 		if not mCmd:
 			return
 		
-		print 'Sending:\n%s...\n' % mCmd[:200]
+		print 'Sending:\n%s ...\n' % mCmd[:200]
 
 		if lang == 'python':
-			mCmd = self.PY_CMD_TEMPLATE % mCmd
+			mCmd = self.PY_CMD_TEMPLATE.format(execType, mCmd)
 
 		c = None
 
 		try:
 			c = Telnet(host, int(port), timeout=3)
 			c.write(mCmd)
+
 		except Exception, e:
 			err = str(e)
 			sublime.error_message(
 				"Failed to communicate with Maya (%(host)s:%(port)s)):\n%(err)s" % locals()
 			)
 			raise
+
 		else:
 			time.sleep(.1)
+		
 		finally:
 			if c is not None:
 				c.close()
