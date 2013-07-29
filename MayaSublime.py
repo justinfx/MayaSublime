@@ -16,8 +16,10 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 	PY_CMD_TEMPLATE = textwrap.dedent('''
 		import traceback
 		import __main__
+		newGlobals = __main__.__dict__.copy()
+		newGlobals['__file__'] = '{2}'
 		try:
-			{0}({1!r}, __main__.__dict__, __main__.__dict__)
+			{0}({1!r}, newGlobals, newGlobals)
 		except:
 			traceback.print_exc() 
 	''')
@@ -82,7 +84,7 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 		print 'Sending:\n%s ...\n' % mCmd[:200]
 
 		if lang == 'python':
-			mCmd = self.PY_CMD_TEMPLATE.format(execType, mCmd)
+			mCmd = self.PY_CMD_TEMPLATE.format(execType, mCmd, file_path)
 
 		c = None
 
