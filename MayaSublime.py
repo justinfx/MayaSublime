@@ -16,8 +16,16 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 	PY_CMD_TEMPLATE = textwrap.dedent('''
 		import traceback
 		import __main__
+
+		namespace = __main__.__dict__.get('_sublime_SendToMaya_plugin')
+		if not namespace:
+			namespace = __main__.__dict__.copy()
+			__main__.__dict__['_sublime_SendToMaya_plugin'] = namespace
+
+		namespace['__file__'] = {2!r}
+
 		try:
-			{0}({1!r}, __main__.__dict__, __main__.__dict__)
+			{0}({1!r}, namespace, namespace)
 		except:
 			traceback.print_exc() 
 	''')
@@ -70,6 +78,7 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 		
 		else:
 			execType = 'exec'
+			file_path = ''
 
 			for sel in selections:
 				snips.extend(line for line in self.view.substr(sel).splitlines() 
@@ -78,11 +87,11 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 		mCmd = str('\n'.join(snips))
 		if not mCmd:
 			return
-		
-		print 'Sending:\n%s ...\n' % mCmd[:200]
 
+		print 'Sending:\n{0} ...\n'.format(mCmd)[:200]
+		
 		if lang == 'python':
-			mCmd = self.PY_CMD_TEMPLATE.format(execType, mCmd)
+			mCmd = self.PY_CMD_TEMPLATE.format(execType, mCmd, file_path)
 
 		c = None
 
