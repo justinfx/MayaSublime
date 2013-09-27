@@ -6,9 +6,9 @@ import textwrap
 import os.path
 
 _settings = {
-	'host'		: '127.0.0.1',
-	'mel_port'	: 7001,
-	'py_port'	: 7002
+	'host'      : '127.0.0.1',
+	'mel_port'  : 7001,
+	'py_port'   : 7002
 }
 
 class SendToMayaCommand(sublime_plugin.TextCommand):  
@@ -33,17 +33,22 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 	RX_COMMENT = re.compile(r'^\s*(//|#)')
 
 	def run(self, edit): 
-
 		
 		syntax = self.view.settings().get('syntax')
 
 		if re.search(r'python', syntax, re.I):
 			lang = 'python'
+			sep = '\n'
+
 		elif re.search(r'mel', syntax, re.I):
 			lang = 'mel'
+			sep = ' '
+
 		else:
 			print 'No Maya Recognized Language Found'
 			return		
+
+		isPython = (lang=='python')
 
 		host = _settings['host'] 
 		port = _settings['py_port'] if lang=='python' else _settings['mel_port']
@@ -81,10 +86,11 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 			file_path = ''
 
 			for sel in selections:
-				snips.extend(line for line in self.view.substr(sel).splitlines() 
+				snips.extend((line if isPython else line.strip()) 
+								for line in self.view.substr(sel).splitlines() 
 								if not self.RX_COMMENT.match(line))
 
-		mCmd = str('\n'.join(snips))
+		mCmd = str(sep.join(snips))
 		if not mCmd:
 			return
 
@@ -120,9 +126,9 @@ def settings_obj():
 def sync_settings():
 	global _settings
 	so = settings_obj()
-	_settings['host'] 		= so.get('maya_hostname')
-	_settings['py_port'] 	= so.get('python_command_port')
-	_settings['mel_port'] 	= so.get('mel_command_port')
+	_settings['host']       = so.get('maya_hostname')
+	_settings['py_port']    = so.get('python_command_port')
+	_settings['mel_port']   = so.get('mel_command_port')
 	
 
 
