@@ -1,9 +1,17 @@
-import sublime, sublime_plugin  
+# ST2/ST3 compat
+import sublime, sublime_plugin
 from telnetlib import Telnet
 import time
 import re
 import textwrap
 import os.path
+import sys
+
+if sublime.version() < '3000':
+    # we are on ST2 and Python 2.X
+	_ST3 = False
+else:
+	_ST3 = True
 
 _settings = {
 	'host'      : '127.0.0.1',
@@ -11,7 +19,7 @@ _settings = {
 	'py_port'   : 7002
 }
 
-class SendToMayaCommand(sublime_plugin.TextCommand):  
+class send_to_mayaCommand(sublime_plugin.TextCommand):  
 
 	PY_CMD_TEMPLATE = textwrap.dedent('''
 		import traceback
@@ -45,12 +53,12 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 			sep = ' '
 
 		else:
-			print 'No Maya Recognized Language Found'
-			return		
+			print ('No Maya Recognized Language Found')
+			return
 
 		isPython = (lang=='python')
 
-		host = _settings['host'] 
+		host = _settings['host']
 		port = _settings['py_port'] if lang=='python' else _settings['mel_port']
 
 		selections = self.view.sel() # Returns type sublime.RegionSet
@@ -65,16 +73,21 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 
 			execType = 'execfile'
 
-			print "Nothing Selected, Attempting to exec entire file"
+			print ("Nothing Selected, Attempting to exec entire file")
 
 			if self.view.is_dirty():
 				sublime.error_message("Save Changes Before Maya Source/Import")
 				return 
 
+			plat = sublime_plugin.sys.platform
 			file_path = self.view.file_name()
 			if file_path is None:
 				sublime.error_message("File must be saved before sending to Maya")
 				return
+
+			if plat == 'win32':
+				file_path = file_path.replace('\\','\\\\')
+				print("FILE PATH:",file_path)
 
 			if lang == 'python':
 				snips.append(file_path)
@@ -94,7 +107,7 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 		if not mCmd:
 			return
 
-		print 'Sending:\n{0} ...\n'.format(mCmd)[:200]
+		print ('Sending:\n{0} ...\n',format(mCmd)[:200])
 		
 		if lang == 'python':
 			mCmd = self.PY_CMD_TEMPLATE.format(execType, mCmd, file_path)
@@ -103,9 +116,14 @@ class SendToMayaCommand(sublime_plugin.TextCommand):
 
 		try:
 			c = Telnet(host, int(port), timeout=3)
-			c.write(mCmd)
+			if _ST3:
+				c.write(mCmd.encode(encoding='UTF-8'))
+			else:
+				c.write(mCmd)
 
-		except Exception, e:
+
+		except Exception:
+			e = sys.exc_info()[1]
 			err = str(e)
 			sublime.error_message(
 				"Failed to communicate with Maya (%(host)s:%(port)s)):\n%(err)s" % locals()
