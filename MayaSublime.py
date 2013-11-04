@@ -1,4 +1,6 @@
 # ST2/ST3 compat
+from __future__ import print_function
+
 import sublime, sublime_plugin
 from telnetlib import Telnet
 import time
@@ -53,7 +55,7 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 			sep = ' '
 
 		else:
-			print ('No Maya Recognized Language Found')
+			print('No Maya Recognized Language Found')
 			return
 
 		isPython = (lang=='python')
@@ -73,7 +75,7 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 
 			execType = 'execfile'
 
-			print ("Nothing Selected, Attempting to exec entire file")
+			print("Nothing Selected, Attempting to exec entire file")
 
 			if self.view.is_dirty():
 				sublime.error_message("Save Changes Before Maya Source/Import")
@@ -107,7 +109,7 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 		if not mCmd:
 			return
 
-		print ('Sending:\n{0} ...\n',format(mCmd)[:200])
+		print('Sending:\n{0} ...\n'.format(mCmd)[:200])
 		
 		if lang == 'python':
 			mCmd = self.PY_CMD_TEMPLATE.format(execType, mCmd, file_path)
