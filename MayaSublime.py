@@ -60,9 +60,8 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 
 		isPython = (lang=='python')
 
-		so = settings_obj()
-		host = so.get('maya_hostname')
-		port = so.get('python_command_port') if lang=='python' else so.get('mel_command_port')
+		host = _settings['host']
+		port = _settings['py_port'] if lang=='python' else _settings['mel_port']
 
 		selections = self.view.sel() # Returns type sublime.RegionSet
 		selSize = 0
@@ -143,3 +142,16 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 
 def settings_obj():
 	return sublime.load_settings("MayaSublime.sublime-settings")
+
+def sync_settings():
+	global _settings
+	so = settings_obj()
+	_settings['host']       = so.get('maya_hostname')
+	_settings['py_port']    = so.get('python_command_port')
+	_settings['mel_port']   = so.get('mel_command_port')
+	
+
+
+settings_obj().clear_on_change("MayaSublime.settings")
+settings_obj().add_on_change("MayaSublime.settings", sync_settings)
+sync_settings()
