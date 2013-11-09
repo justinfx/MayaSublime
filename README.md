@@ -1,5 +1,5 @@
 # MayaSublime
-### A Sublime Text 2 plugin
+### A Sublime Text 2/3 plugin
 
 Send selected MEL/Python code snippets or whole files to Maya via commandPort
 
