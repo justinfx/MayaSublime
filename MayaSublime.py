@@ -60,6 +60,9 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 
 		isPython = (lang=='python')
 
+		if _ST3 and _settings['host']==None:
+			sync_settings()
+			
 		host = _settings['host']
 		port = _settings['py_port'] if lang=='python' else _settings['mel_port']
 
@@ -81,12 +84,12 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 				sublime.error_message("Save Changes Before Maya Source/Import")
 				return 
 
-			plat = sublime_plugin.sys.platform
 			file_path = self.view.file_name()
 			if file_path is None:
 				sublime.error_message("File must be saved before sending to Maya")
 				return
 
+			plat = sublime_plugin.sys.platform
 			if plat == 'win32':
 				file_path = file_path.replace('\\','\\\\')
 				print("FILE PATH:",file_path)
