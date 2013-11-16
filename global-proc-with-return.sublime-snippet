@@ -1,0 +1,13 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>proc(g)(r)</tabTrigger>
+    <scope>source.mel</scope>
+    <description>global procedure with return</description>
+
+	<content><![CDATA[
+global proc ${1:returnType} ${2:procName}( ${3:dataType} \$${4:arg} ){
+	${5:// Statements;}
+	return \$${6:result};
+}
+]]></content>
+</snippet>

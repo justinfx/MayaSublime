@@ -1,0 +1,12 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>for in</tabTrigger>
+    <scope>source.mel</scope>
+    <description>for in loop</description>
+
+	<content><![CDATA[
+for (${1:array-element} in \$${2:array}) {
+	${3://statement;}
+}
+]]></content>
+</snippet>

@@ -1,0 +1,12 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>case</tabTrigger>
+    <scope>source.mel</scope>
+    <description>case for switch</description>
+
+	<content><![CDATA[
+case ${1:value}:
+	${2:exp};
+	break;
+]]></content>
+</snippet>

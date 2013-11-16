@@ -1,0 +1,10 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>global</tabTrigger>
+    <scope>source.mel</scope>
+    <description>global variable</description>
+
+	<content><![CDATA[
+global ${1:string} \$${2:variableName};
+]]></content>
+</snippet>

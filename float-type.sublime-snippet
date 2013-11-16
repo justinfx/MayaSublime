@@ -1,0 +1,10 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>float</tabTrigger>
+    <scope>source.mel</scope>
+    <description>float type</description>
+
+	<content><![CDATA[
+float \$${1:var} = ${2:value};
+]]></content>
+</snippet>

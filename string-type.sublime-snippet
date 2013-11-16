@@ -1,0 +1,10 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>string</tabTrigger>
+    <scope>source.mel</scope>
+    <description>string type</description>
+
+	<content><![CDATA[
+string \$${1:var} = "${2}";
+]]></content>
+</snippet>

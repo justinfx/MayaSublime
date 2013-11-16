@@ -1,0 +1,12 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>default</tabTrigger>
+    <scope>source.mel</scope>
+    <description>case for switch</description>
+
+	<content><![CDATA[
+default:
+	${1:exp};
+	break;
+]]></content>
+</snippet>

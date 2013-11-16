@@ -1,0 +1,10 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>continue</tabTrigger>
+    <scope>source.mel</scope>
+    <description>continue</description>
+
+	<content><![CDATA[
+continue;
+]]></content>
+</snippet>

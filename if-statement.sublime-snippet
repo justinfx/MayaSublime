@@ -1,0 +1,12 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>if</tabTrigger>
+    <scope>source.mel</scope>
+    <description>if</description>
+
+	<content><![CDATA[
+if (${1:condition}){
+	${2:// Statements;}
+}
+]]></content>
+</snippet>

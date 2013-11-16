@@ -1,0 +1,10 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>vector</tabTrigger>
+    <scope>source.mel</scope>
+    <description>vector type</description>
+
+	<content><![CDATA[
+vector \$${1:var} = <<${2:x}, ${3:y}, ${4:z}>>;
+]]></content>
+</snippet>

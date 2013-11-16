@@ -1,0 +1,15 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>if..elseif</tabTrigger>
+    <scope>source.mel</scope>
+    <description>if else if</description>
+
+	<content><![CDATA[
+if (${1:condition}){
+	${2:// Statements1;}
+}
+else if(${3:condition}){
+	${4:// Statements2;}
+}
+]]></content>
+</snippet>

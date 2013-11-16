@@ -1,0 +1,12 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>for</tabTrigger>
+    <scope>source.mel</scope>
+    <description>for loop</description>
+
+	<content><![CDATA[
+for (${1:initialization}; ${2:condition}; ${3:step}) {
+	${4://statement;}
+}
+]]></content>
+</snippet>

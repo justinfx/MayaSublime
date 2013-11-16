@@ -1,0 +1,10 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>int</tabTrigger>
+    <scope>source.mel</scope>
+    <description>int type</description>
+
+	<content><![CDATA[
+int \$${1:var} = ${2:value};
+]]></content>
+</snippet>

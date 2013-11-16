@@ -1,0 +1,12 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>do...while</tabTrigger>
+    <scope>source.mel</scope>
+    <description>do while</description>
+
+	<content><![CDATA[
+do {
+	${1:// Statements;}
+} while (${2:condition});
+]]></content>
+</snippet>

@@ -1,0 +1,24 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>switch...case</tabTrigger>
+    <scope>source.mel</scope>
+    <description>switch case</description>
+
+	<content><![CDATA[
+switch (${1:controlExp}) {
+	case ${2:value1}:
+		${3:exp1};
+		break;
+	case ${4:value1}:
+		${5:exp2};
+		break;
+	case ${6:value1}:
+		${7:exp3};
+		break;
+
+	default:
+		${8:exp4};
+		break;
+}
+]]></content>
+</snippet>

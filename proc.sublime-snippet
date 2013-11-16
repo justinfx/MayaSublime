@@ -1,0 +1,12 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>proc</tabTrigger>
+    <scope>source.mel</scope>
+    <description>procedure</description>
+
+	<content><![CDATA[
+proc ${1:procName}( ${2:dataType} \$${3:arg} ){
+	${4:// Statements;}
+}
+]]></content>
+</snippet>

@@ -1,0 +1,10 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>matrix2</tabTrigger>
+    <scope>source.mel</scope>
+    <description>matrix type</description>
+
+	<content><![CDATA[
+matrix \$${1:var}[${2}][${3}] = ${4:value};
+]]></content>
+</snippet>

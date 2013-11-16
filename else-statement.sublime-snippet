@@ -1,0 +1,12 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>else</tabTrigger>
+    <scope>source.mel</scope>
+    <description>else</description>
+
+	<content><![CDATA[
+else{
+	${1:// Statements;}
+}
+]]></content>
+</snippet>

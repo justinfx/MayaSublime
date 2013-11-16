@@ -1,0 +1,10 @@
+<!-- Author : madoodia@gmail.com -->
+<snippet>
+    <tabTrigger>op ?:</tabTrigger>
+    <scope>source.mel</scope>
+    <description>?: operator</description>
+
+	<content><![CDATA[
+\$${1:result} = (${2:condition}) ? ${3:exp1} : ${4:exp2};
+]]></content>
+</snippet>
