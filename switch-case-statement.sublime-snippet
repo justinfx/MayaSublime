@@ -1,7 +1,7 @@
 <!-- Author : madoodia@gmail.com -->
 <snippet>
     <tabTrigger>switch...case</tabTrigger>
-    <!-- <scope>source.MEL</scope> -->
+    <scope>source.mel</scope>
     <description>switch case</description>
 
 	<content><![CDATA[

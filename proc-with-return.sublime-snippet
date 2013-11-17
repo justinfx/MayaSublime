@@ -1,7 +1,7 @@
 <!-- Author : madoodia@gmail.com -->
 <snippet>
     <tabTrigger>proc(r)</tabTrigger>
-    <!-- <scope>source.MEL</scope> -->
+    <scope>source.mel</scope>
     <description>procedure with return</description>
 
 	<content><![CDATA[

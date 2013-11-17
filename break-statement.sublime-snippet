@@ -1,7 +1,7 @@
 <!-- Author : madoodia@gmail.com -->
 <snippet>
     <tabTrigger>break</tabTrigger>
-    <!-- <scope>source.MEL</scope> -->
+    <scope>source.mel</scope>
     <description>break</description>
 
 	<content><![CDATA[

@@ -1,7 +1,7 @@
 <!-- Author : madoodia@gmail.com -->
 <snippet>
     <tabTrigger>for</tabTrigger>
-    <!-- <scope>source.MEL</scope> -->
+    <scope>source.mel</scope>
     <description>for loop</description>
 
 	<content><![CDATA[

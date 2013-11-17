@@ -1,7 +1,7 @@
 <!-- Author : madoodia@gmail.com -->
 <snippet>
     <tabTrigger>else</tabTrigger>
-    <!-- <scope>source.MEL</scope> -->
+    <scope>source.mel</scope>
     <description>else</description>
 
 	<content><![CDATA[
