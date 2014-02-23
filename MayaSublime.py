@@ -1,13 +1,16 @@
 # ST2/ST3 compat
 from __future__ import print_function
 
-import sublime, sublime_plugin
-from telnetlib import Telnet
-import time
 import re
-import textwrap
-import os.path
 import sys
+import time
+import os.path
+import textwrap
+
+from telnetlib import Telnet
+
+import sublime, sublime_plugin
+
 
 if sublime.version() < '3000':
     # we are on ST2 and Python 2.X
@@ -15,14 +18,23 @@ if sublime.version() < '3000':
 else:
 	_ST3 = True
 
+
+# Our default plugin settings
 _settings = {
 	'host'      : '127.0.0.1',
 	'mel_port'  : 7001,
 	'py_port'   : 7002
 }
 
+
 class send_to_mayaCommand(sublime_plugin.TextCommand):  
 
+	# A template wrapper for sending Python source safely 
+	# over the socket. 
+	# Executes in a private namespace to avoid collisions 
+	# with the main environment in Maya. 
+	# Also handles catches and printing exceptions so that
+	# they are not masked. 
 	PY_CMD_TEMPLATE = textwrap.dedent('''
 		import traceback
 		import __main__
@@ -40,10 +52,12 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 			traceback.print_exc() 
 	''')
 
+	# Match single-line comments in MEL/Python
 	RX_COMMENT = re.compile(r'^\s*(//|#)')
 
 	def run(self, edit): 
 		
+		# Do we have a valid source language?
 		syntax = self.view.settings().get('syntax')
 
 		if re.search(r'python', syntax, re.I):
@@ -52,20 +66,24 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 
 		elif re.search(r'mel', syntax, re.I):
 			lang = 'mel'
-			sep = ' '
+			sep = '\r'
 
 		else:
-			print('No Maya Recognized Language Found')
+			print('No Maya-Recognized Language Found')
 			return
 
 		isPython = (lang=='python')
 
+		# Apparently ST3 doesn't always sync up its latest 
+		# plugin settings?
 		if _ST3 and _settings['host']==None:
 			sync_settings()
 			
 		host = _settings['host']
 		port = _settings['py_port'] if lang=='python' else _settings['mel_port']
 
+		# Check the current selection size to determine 
+		# how we will send the source to be executed.
 		selections = self.view.sel() # Returns type sublime.RegionSet
 		selSize = 0
 		for sel in selections:
@@ -74,6 +92,8 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 
 		snips = []
 
+		# If nothing is selected, we will use an approach that sends an 
+		# entire source file, and tell Maya to execute it. 
 		if selSize == 0:
 
 			execType = 'execfile'
@@ -99,22 +119,28 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 			else:
 				snips.append('rehash; source "{0}";'.format(file_path))
 		
+		# Otherwise, we are sending snippets of code to be executed
 		else:
 			execType = 'exec'
 			file_path = ''
 
+			substr = self.view.substr
+			match = self.RX_COMMENT.match
+
+			# Build up all of the selected lines, while removing single-line comments
+			# to simplify the amount of data being sent.
 			for sel in selections:
-				snips.extend((line if isPython else line.strip()) 
-								for line in self.view.substr(sel).splitlines() 
-								if not self.RX_COMMENT.match(line))
+				snips.extend(line for line in substr(sel).splitlines() if not match(line))
 
 		mCmd = str(sep.join(snips))
 		if not mCmd:
 			return
 
-		print('Sending:\n{0} ...\n'.format(mCmd)[:200])
+		print('Sending {0}:\n{1!r}\n...'.format(lang, mCmd[:200]))
 		
 		if lang == 'python':
+			# We need to wrap our source string into a template
+			# so that it gets executed properly on the Maya side
 			mCmd = self.PY_CMD_TEMPLATE.format(execType, mCmd, file_path)
 
 		c = None
@@ -125,7 +151,6 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 				c.write(mCmd.encode(encoding='UTF-8'))
 			else:
 				c.write(mCmd)
-
 
 		except Exception:
 			e = sys.exc_info()[1]
