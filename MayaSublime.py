@@ -23,7 +23,8 @@ else:
 _settings = {
 	'host'      : '127.0.0.1',
 	'mel_port'  : 7001,
-	'py_port'   : 7002
+	'py_port'   : 7002,
+	'strip_sending_comments': True
 }
 
 
@@ -126,11 +127,15 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 
 			substr = self.view.substr
 			match = self.RX_COMMENT.match
+			stripComments = _settings['strip_comments']
 
 			# Build up all of the selected lines, while removing single-line comments
 			# to simplify the amount of data being sent.
 			for sel in selections:
-				snips.extend(line for line in substr(sel).splitlines() if not match(line))
+				if stripComments:
+					snips.extend(line for line in substr(sel).splitlines() if not match(line))
+				else:
+					snips.extend(substr(sel).splitlines())
 
 		mCmd = str(sep.join(snips))
 		if not mCmd:
@@ -172,11 +177,11 @@ def settings_obj():
 	return sublime.load_settings("MayaSublime.sublime-settings")
 
 def sync_settings():
-	global _settings
 	so = settings_obj()
-	_settings['host']       = so.get('maya_hostname')
-	_settings['py_port']    = so.get('python_command_port')
-	_settings['mel_port']   = so.get('mel_command_port')
+	_settings['host']           = so.get('maya_hostname')
+	_settings['py_port']        = so.get('python_command_port')
+	_settings['mel_port']       = so.get('mel_command_port')
+	_settings['strip_comments'] = so.get('strip_sending_comments')
 	
 
 
