@@ -7,6 +7,18 @@
 	"python_command_port" : 7002,
 
 	// Maya commandPort to communicate via MEL
-	"mel_command_port" : 7001
+	"mel_command_port" : 7001,
 
+	// When sending selected code to Maya, strip
+	// out single-line comments in order to reduce
+	// the amount of data sent, and leave more room
+	// for more code to be sent
+	//
+	// A reason for disabling this feature is if you
+	// rely on accurate line numbers from errors in 
+	// your code, reported by the Script Editor
+	//
+	// When sending whole files (nothing selected),
+	// comments are never stripped.
+	"strip_sending_comments": true
 }
