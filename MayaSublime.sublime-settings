@@ -20,5 +20,12 @@
 	//
 	// When sending whole files (nothing selected),
 	// comments are never stripped.
-	"strip_sending_comments": true
+	"strip_sending_comments": true,
+
+	// This wraps Python code in its own namespace
+	// to avoid collisions with the main Maya
+	// environment. (It is safer but if you are
+	// mixing this plugin with code from the
+	// Script Editor, set this to false.)
+	"no_collisions": true,
 }

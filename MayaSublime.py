@@ -45,10 +45,12 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 			namespace = __main__.__dict__.copy()
 			__main__.__dict__['_sublime_SendToMaya_plugin'] = namespace
 
-		namespace['__file__'] = {2!r}
-
 		try:
-			{0}({1!r}, namespace, namespace)
+			if {ns}:
+				namespace['__file__'] = {fp!r}
+				{xtype}({cmd!r}, namespace, namespace)
+			else:
+				{xtype}({cmd!r})
 		except:
 			traceback.print_exc() 
 	''')
@@ -146,7 +148,9 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 		if lang == 'python':
 			# We need to wrap our source string into a template
 			# so that it gets executed properly on the Maya side
-			mCmd = self.PY_CMD_TEMPLATE.format(execType, mCmd, file_path)
+			no_collide = _settings['no_collisions']
+			opts = dict(xtype=execType, cmd=mCmd, fp=file_path, ns=no_collide)
+			mCmd = self.PY_CMD_TEMPLATE.format(**opts)
 
 		c = None
 
@@ -182,6 +186,7 @@ def sync_settings():
 	_settings['py_port']        = so.get('python_command_port')
 	_settings['mel_port']       = so.get('mel_command_port')
 	_settings['strip_comments'] = so.get('strip_sending_comments')
+	_settings['no_collisions']  = so.get('no_collisions')
 	
 
 
