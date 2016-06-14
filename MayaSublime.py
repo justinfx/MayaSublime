@@ -45,10 +45,10 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 			namespace = __main__.__dict__.copy()
 			__main__.__dict__['_sublime_SendToMaya_plugin'] = namespace
 
-		namespace['__file__'] = {2!r}
+		namespace['__file__'] = {fp!r}
 
 		try:
-			{0}({1!r}, namespace, namespace)
+			{xtype}({cmd!r}, namespace, namespace)
 		except:
 			traceback.print_exc() 
 	''')
@@ -146,7 +146,8 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 		if lang == 'python':
 			# We need to wrap our source string into a template
 			# so that it gets executed properly on the Maya side
-			mCmd = self.PY_CMD_TEMPLATE.format(execType, mCmd, file_path)
+			opts = dict(xtype=execType, cmd=mCmd, fp=file_path)
+			mCmd = self.PY_CMD_TEMPLATE.format(**opts)
 
 		c = None
 
