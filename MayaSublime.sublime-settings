@@ -27,5 +27,5 @@
 	// environment. (It is safer but if you are
 	// mixing this plugin with code from the
 	// Script Editor, set this to false.)
-	"no_collisions": true,
+	"no_collisions": true
 }
