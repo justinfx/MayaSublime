@@ -29,6 +29,10 @@
 	// Script Editor, set this to false.)
 	"no_collisions": true,
 
+	// If enabled, create an undo around the entire
+	// code that is sent to Maya and executed
+	"create_undo": false,
+
 	// If enabled, MayaSublime will automatically hook 
 	// up Maya's ScriptEditor to also publish its output to
 	// Sublime's console. A restart of SublimeText

@@ -34,6 +34,7 @@ _settings = {
 	'strip_comments': True,
 	'no_collisions': True,
 	'maya_output': False, 
+	'undo': False,
 
 	# Internal state
 	'_t_reader': None,
@@ -161,7 +162,12 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 			# We need to wrap our source string into a template
 			# so that it gets executed properly on the Maya side
 			no_collide = _settings['no_collisions']
-			opts = dict(xtype=execType, cmd=mCmd, fp=file_path, ns=no_collide)
+			create_undo = _settings["undo"]
+			opts = dict(
+				xtype=execType, cmd=mCmd, fp=file_path, 
+				ns=no_collide, undo=create_undo,
+				)
+
 			mCmd = PY_CMD_TEMPLATE.format(**opts)
 
 		if _settings["maya_output"]:
@@ -181,7 +187,8 @@ def _send_to_maya(cmd, lang='python', wrap=True, quiet=False):
 
 	if lang == 'python' and wrap:
 		no_collide = _settings['no_collisions']
-		opts = dict(xtype='exec', cmd=cmd, fp='', ns=no_collide)
+		create_undo = _settings["undo"]
+		opts = dict(xtype='exec', cmd=cmd, fp='', ns=no_collide, undo=create_undo)
 		cmd = PY_CMD_TEMPLATE.format(**opts)
 
 	c = None
@@ -373,7 +380,6 @@ def settings_obj():
 
 
 def sync_settings():
-	print("sync settings")
 	so = settings_obj()
 
 	_settings['host']           = so.get('maya_hostname')
@@ -382,6 +388,7 @@ def sync_settings():
 	_settings['strip_comments'] = so.get('strip_sending_comments')
 	_settings['no_collisions']  = so.get('no_collisions')
 	_settings['maya_output']    = so.get('receive_maya_output')
+	_settings['undo']           = so.get('create_undo')
 
 	MayaReader._st2_remove_reader()
 
@@ -399,12 +406,17 @@ PY_CMD_TEMPLATE = textwrap.dedent('''
 	import traceback
 	import __main__
 
+	import maya.cmds
+
 	namespace = __main__.__dict__.get('_sublime_SendToMaya_plugin')
 	if not namespace:
 		namespace = __main__.__dict__.copy()
 		__main__.__dict__['_sublime_SendToMaya_plugin'] = namespace
 
 	try:
+		if {undo}:
+			maya.cmds.undoInfo(openChunk=True, chunkName="MayaSublime Code")
+
 		if {ns}:
 			namespace['__file__'] = {fp!r}
 			{xtype}({cmd!r}, namespace, namespace)
@@ -412,6 +424,9 @@ PY_CMD_TEMPLATE = textwrap.dedent('''
 			{xtype}({cmd!r})
 	except:
 		traceback.print_exc() 
+	finally:
+		if {undo}:
+			maya.cmds.undoInfo(closeChunk=True)
 ''')
 
 
