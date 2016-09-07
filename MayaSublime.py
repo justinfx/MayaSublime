@@ -95,7 +95,7 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 
 		# Apparently ST3 doesn't always sync up its latest 
 		# plugin settings?
-		if _ST3 and _settings['host']==None:
+		if _settings['host'] is None:
 			sync_settings()
 
 		# Check the current selection size to determine 
@@ -182,6 +182,9 @@ def _send_to_maya(cmd, lang='python', wrap=True, quiet=False):
 	"""
 	Send stringified Python code to Maya, to be executed. 
 	"""
+	if _settings['host'] is None:
+		sync_settings()
+		
 	host = _settings['host']
 	port = _settings['py_port'] if lang=='python' else _settings['mel_port']
 
