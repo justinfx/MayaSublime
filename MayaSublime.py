@@ -237,7 +237,7 @@ class MayaReader(threading.Thread):
 	"""
 
 	# Max number of bytes to read from each packet.
-	BUFSIZE = 20 * 1024 # 20KB seems reasonable
+	BUFSIZE = 64 * 1024 # 64KB is max UDP packet size
 
 	# Signal to stop a receiving MayaReader
 	STOP_MSG = _py_str('MayaSublime::MayaReader::{0}'.format(uuid.uuid4()))
@@ -276,19 +276,35 @@ class MayaReader(threading.Thread):
 
 		print("{0}started on port {1}".format(prefix, self.port()))
 
+		fails = 0
 		self._running.set()
+
 		while  self._running.is_set():
-			msg, addr = self.sock.recvfrom(self.BUFSIZE)
-			
+			try:
+				msg, addr = self.sock.recvfrom(self.BUFSIZE)
+
+			except Exception as e:
+				print("Failed while reading output from Maya:")
+				traceback.print_exc()
+
+				# Prevent runaway failures from spinning
+				fails += 1
+				if fails >= 10:
+					# After too many failures in a row
+					# wait a bit
+					fails = 0
+					time.sleep(5)
+
+				continue
+
+			fails = 0 
+
 			if msg == self.STOP_MSG:
 				break 
 
 			if _ST3:
 				msg = msg.decode()
 
-			if msg.strip() and not msg.startswith(prefix):
-				sys.stdout.write(prefix)
-			
 			sys.stdout.write(msg)
 
 			if not msg.endswith('\n'):
