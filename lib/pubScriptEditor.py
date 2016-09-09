@@ -40,9 +40,7 @@ def _MayaSublime_streamScriptEditor(enable, host="127.0.0.1", port=5123, quiet=F
         buf.seek(0)
         buf.truncate()
         
-        msg = str(msg)
-
-        if msg.strip():
+        if msgType != om.MCommandMessage.kDisplay:
             buf.write('[MayaSublime] ')
 
         if msgType == om.MCommandMessage.kWarning:

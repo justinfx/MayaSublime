@@ -306,9 +306,6 @@ class MayaReader(threading.Thread):
 				msg = msg.decode()
 
 			sys.stdout.write(msg)
-
-			if not msg.endswith('\n'):
-				sys.stdout.write('\n')
 		
 		print("{0}MayaReader stopped".format(prefix))
 
