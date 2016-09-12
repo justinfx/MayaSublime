@@ -11,6 +11,7 @@ import socket
 import os.path
 import textwrap
 import threading 
+import traceback
 
 from telnetlib import Telnet
 
@@ -228,6 +229,165 @@ def _py_str(s):
 	return s
 
 
+def settings_obj():
+	return sublime.load_settings("MayaSublime.sublime-settings")
+
+
+def sync_settings():
+	so = settings_obj()
+
+	_settings['host']           = so.get('maya_hostname')
+	_settings['py_port']        = so.get('python_command_port')
+	_settings['mel_port']       = so.get('mel_command_port')
+	_settings['strip_comments'] = so.get('strip_sending_comments')
+	_settings['no_collisions']  = so.get('no_collisions')
+	_settings['maya_output']    = so.get('receive_maya_output')
+	_settings['undo']           = so.get('create_undo')
+
+	MayaReader._st2_remove_reader()
+
+	if _settings['maya_output'] is not None:
+		MayaReader.set_maya_output_enabled(_settings["maya_output"])
+
+
+# A template wrapper for sending Python source safely 
+# over the socket. 
+# Executes in a private namespace to avoid collisions 
+# with the main environment in Maya. 
+# Also handles catches and printing exceptions so that
+# they are not masked. 
+PY_CMD_TEMPLATE = textwrap.dedent('''
+	import traceback
+	import __main__
+
+	import maya.cmds
+
+	namespace = __main__.__dict__.get('_sublime_SendToMaya_plugin')
+	if not namespace:
+		namespace = __main__.__dict__.copy()
+		__main__.__dict__['_sublime_SendToMaya_plugin'] = namespace
+
+	try:
+		if {undo}:
+			maya.cmds.undoInfo(openChunk=True, chunkName="MayaSublime Code")
+
+		if {ns}:
+			namespace['__file__'] = {fp!r}
+			{xtype}({cmd!r}, namespace, namespace)
+		else:
+			{xtype}({cmd!r})
+	except:
+		traceback.print_exc() 
+	finally:
+		if {undo}:
+			maya.cmds.undoInfo(closeChunk=True)
+''')
+
+
+
+PY_MAYA_CALLBACK = textwrap.dedent(r'''
+import errno
+import socket
+import maya.OpenMaya
+
+try:
+	from cStringIO import StringIO
+except ImportError:
+	from StringIO import StringIO
+
+if '_MayaSublime_ScriptEditorOutput_CID' not in globals():
+	_MayaSublime_ScriptEditorOutput_CID = None
+
+if '_MayaSublime_SOCK' not in globals():
+	_MayaSublime_SOCK = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+def _MayaSublime_streamScriptEditor(enable, host="127.0.0.1", port=5123, quiet=False):
+	om = maya.OpenMaya 
+
+	global _MayaSublime_ScriptEditorOutput_CID
+	cid = _MayaSublime_ScriptEditorOutput_CID
+
+	# Only print if we are really changing state
+	if enable and cid is None:
+		sys.stdout.write("[MayaSublime] Enable Streaming ScriptEditor " \
+						 "({0}:{1})\n".format(host, port))
+
+	elif not enable and cid is not None:
+		sys.stdout.write("[MayaSublime] Disable Streaming ScriptEditor\n")
+
+	if cid is not None:
+		om.MMessage.removeCallback(cid)
+		_MayaSublime_ScriptEditorOutput_CID = None 
+
+	if not enable:
+		return 
+
+	buf = StringIO()
+
+	def _streamToMayaSublime(msg, msgType, *args): 
+		buf.seek(0)
+		buf.truncate()
+		
+		if msgType != om.MCommandMessage.kDisplay:
+			buf.write('[MayaSublime] ')
+
+		if msgType == om.MCommandMessage.kWarning:
+			buf.write('# Warning: ')
+			buf.write(msg)
+			buf.write(' #\n')
+
+		elif msgType == om.MCommandMessage.kError:
+			buf.write('// Error: ')
+			buf.write(msg)
+			buf.write(' //\n')
+
+		elif msgType == om.MCommandMessage.kResult:
+			buf.write('# Result: ')
+			buf.write(msg)
+			buf.write(' #\n')
+
+		else:
+			buf.write(msg)
+
+		buf.seek(0)
+
+		# Start with trying to send 8kb packets
+		bufsize = 8*1024
+
+		# Loop until the buffer is empty
+		while True:
+
+			while bufsize > 0:
+				# Save our position in case we error
+				# and need to roll back
+				pos = buf.tell()
+
+				part = buf.read(bufsize)
+				if not part:
+					# Buffer is empty. Nothing else to send
+					return 
+
+				try:
+					_MayaSublime_SOCK.sendto(part, (host, port))
+
+				except Exception as e:
+					if e.errno == errno.EMSGSIZE:
+						# We have hit a message size limit. 
+						# Scale down and try the packet again
+						bufsize /= 2
+						buf.seek(pos)
+						continue 
+					# Some other error
+					raise 
+
+				# Message sent without error
+				break
+
+	cid = om.MCommandMessage.addCommandOutputCallback(_streamToMayaSublime)
+	_MayaSublime_ScriptEditorOutput_CID = cid
+''')
+
+
 class MayaReader(threading.Thread):
 	"""
 	A threaded reader that monitors for published ScriptEditor
@@ -242,9 +402,10 @@ class MayaReader(threading.Thread):
 	# Signal to stop a receiving MayaReader
 	STOP_MSG = _py_str('MayaSublime::MayaReader::{0}'.format(uuid.uuid4()))
 
-	# Stringified ScriptEditor callback code to install in Maya
-	PY_MAYA_CALLBACK = open(os.path.join(os.path.dirname(__file__), 
-									     "lib/pubScriptEditor.py")).read()
+	# # Stringified ScriptEditor callback code to install in Maya
+	# PY_MAYA_CALLBACK = open(os.path.join(os.path.dirname(__file__), 
+	# 								     "lib/pubScriptEditor.py")).read()
+	PY_MAYA_CALLBACK = PY_MAYA_CALLBACK
 
 	def __init__(self, host='127.0.0.1', port=0):
 		super(MayaReader, self).__init__()
@@ -390,60 +551,6 @@ class MayaReader(threading.Thread):
 		cls._st2_replace_reader(reader)
 
 		reader._set_maya_callback_enabled(True, quiet)
-
-def settings_obj():
-	return sublime.load_settings("MayaSublime.sublime-settings")
-
-
-def sync_settings():
-	so = settings_obj()
-
-	_settings['host']           = so.get('maya_hostname')
-	_settings['py_port']        = so.get('python_command_port')
-	_settings['mel_port']       = so.get('mel_command_port')
-	_settings['strip_comments'] = so.get('strip_sending_comments')
-	_settings['no_collisions']  = so.get('no_collisions')
-	_settings['maya_output']    = so.get('receive_maya_output')
-	_settings['undo']           = so.get('create_undo')
-
-	MayaReader._st2_remove_reader()
-
-	if _settings['maya_output'] is not None:
-		MayaReader.set_maya_output_enabled(_settings["maya_output"])
-
-
-# A template wrapper for sending Python source safely 
-# over the socket. 
-# Executes in a private namespace to avoid collisions 
-# with the main environment in Maya. 
-# Also handles catches and printing exceptions so that
-# they are not masked. 
-PY_CMD_TEMPLATE = textwrap.dedent('''
-	import traceback
-	import __main__
-
-	import maya.cmds
-
-	namespace = __main__.__dict__.get('_sublime_SendToMaya_plugin')
-	if not namespace:
-		namespace = __main__.__dict__.copy()
-		__main__.__dict__['_sublime_SendToMaya_plugin'] = namespace
-
-	try:
-		if {undo}:
-			maya.cmds.undoInfo(openChunk=True, chunkName="MayaSublime Code")
-
-		if {ns}:
-			namespace['__file__'] = {fp!r}
-			{xtype}({cmd!r}, namespace, namespace)
-		else:
-			{xtype}({cmd!r})
-	except:
-		traceback.print_exc() 
-	finally:
-		if {undo}:
-			maya.cmds.undoInfo(closeChunk=True)
-''')
 
 
 # Add callbacks for monitoring setting changes
