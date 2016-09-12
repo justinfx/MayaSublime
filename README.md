@@ -9,18 +9,20 @@ Send selected MEL/Python code snippets or whole files to Maya via commandPort
 
 **Easy Install**
 
-You can install this plugin directly from Sublimt Package Control:
+You can install this plugin directly from Sublime Package Control:
 
 https://packagecontrol.io/packages/MayaSublime
 
 **Manual install**
 
-1. clone this repo into the `SublimeText2 -> Preference -> Browse Packages` directory:  
+1. clone this repo into the `SublimeText2/3 -> Preference -> Browse Packages` directory:  
 `git clone git://github.com/justinfx/MayaSublime.git`
 
 2. Edit the `MayaSublime.sublime-settings` file, setting the port to match the commandPorts you have configured in Maya
 
 3. Optionally edit the keymap file to change the default hotkey from `ctrl+return` to something else.
+
+Note - Ideally you would make your custom changes to the user settings and not the default settings, so that they do not get overwritten when the plugin is updated.
 
 ### Usage
 

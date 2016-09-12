@@ -4,6 +4,14 @@
         "command": "send_to_maya"
     },
     {
+        "caption": "Maya: Enable ScriptEditor Output",
+        "command": "enable_maya_output"
+    },
+    {
+        "caption": "Maya: Disable ScriptEditor Output",
+        "command": "disable_maya_output"
+    },
+    {
         "caption": "Preferences: Maya Settings",
         "command": "open_file", "args":
         {
