@@ -1,3 +1,4 @@
+import sys
 import errno
 import socket
 import maya.OpenMaya
@@ -8,10 +9,10 @@ except ImportError:
     from StringIO import StringIO
 
 if '_MayaSublime_ScriptEditorOutput_CID' not in globals():
-	_MayaSublime_ScriptEditorOutput_CID = None
+    _MayaSublime_ScriptEditorOutput_CID = None
 
 if '_MayaSublime_SOCK' not in globals():
-	_MayaSublime_SOCK = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    _MayaSublime_SOCK = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 def _MayaSublime_streamScriptEditor(enable, host="127.0.0.1", port=5123, quiet=False):
     om = maya.OpenMaya 
