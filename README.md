@@ -3,6 +3,12 @@
 
 Send selected MEL/Python code snippets or whole files to Maya via commandPort
 
+**Features**
+
+* Optional streaming of all Maya Script Editor output back to Sublime console
+* Maya undo support
+* Includes MEL Syntax Highlighting for Sublime
+
 ----------
 
 ### Installation
@@ -26,8 +32,8 @@ Note - Ideally you would make your custom changes to the user settings and not t
 
 ### Usage
 
-To send a snippet, simply select some code in a mel or python script, and hit `ctrl+return`, or right click and choose "Send To Maya".
-A socket conncetion will be made to a running Maya instance on the configured port matching mel or python, and the code will be 
+To send a snippet, simply select some code in a MEL or python script, and hit `ctrl+return`, or right click and choose "Send To Maya".
+A socket connection will be made to a running Maya instance on the configured port matching MEL or python, and the code will be 
 run in Maya's environment.
 
 As an example, if you want to open a commandPort on port 7002 for python (the default port in the config), you can do the following:
@@ -43,3 +49,17 @@ cmds.commandPort(name=":7002", sourceType="python")
 cmds.commandPort(name=":10000", sourceType="mel")
 
 ```
+
+**Receiving results from Maya**
+
+By default, results from commands sent to Maya will not returned to Sublime, so output would be viewed from Maya.
+The ability to stream all output from the Maya Script Editor can be enabled in two different ways.
+
+Edit the `MayaSublime.sublime-settings` file to make feature enabled by default:
+
+```json
+	"receive_maya_output": true
+```
+
+Or, use the Command Palette to toggle the feature on or off: "Maya: Enable ScriptEditor Output"
+
