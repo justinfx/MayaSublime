@@ -32,7 +32,7 @@ Note - Ideally you would make your custom changes to the user settings and not t
 
 ### Usage
 
-To send a snippet, simply select some code in a MEL or python script, and hit `ctrl+return`, or right click and choose "Send To Maya".
+To send a snippet, simply select some code in a MEL or python script, and hit <kbd>Ctrl</kbd>+<kbd>Return</kbd>, or right click and choose "Send To Maya".
 A socket connection will be made to a running Maya instance on the configured port matching MEL or python, and the code will be 
 run in Maya's environment.
 
