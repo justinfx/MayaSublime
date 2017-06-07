@@ -286,6 +286,7 @@ PY_CMD_TEMPLATE = textwrap.dedent('''
 
 
 PY_MAYA_CALLBACK = textwrap.dedent(r'''
+import sys
 import errno
 import socket
 import maya.OpenMaya
