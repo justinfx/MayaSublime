@@ -477,7 +477,7 @@ class MayaReader(threading.Thread):
 		"""
 		host, port = self.sock.getsockname()
 		cmd = "_MayaSublime_streamScriptEditor({0}, host={1!r}, port={2})".format(enable, host, port)
-		return _send_to_maya(cmd, quiet=quiet)
+		return _send_to_maya(cmd, quiet=quiet, wrap=_settings['no_collisions'])
 
 	@classmethod
 	def _st2_remove_reader(cls):
@@ -520,7 +520,7 @@ class MayaReader(threading.Thread):
 	@classmethod 
 	def install_maya_callback(cls):
 		"""Send the callback logic to Maya"""
-		return _send_to_maya(cls.PY_MAYA_CALLBACK, quiet=True)
+		return _send_to_maya(cls.PY_MAYA_CALLBACK, quiet=True, wrap=_settings['no_collisions'])
 
 	@classmethod
 	def set_maya_output_enabled(cls, enable):
