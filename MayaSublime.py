@@ -275,7 +275,7 @@ PY_CMD_TEMPLATE = textwrap.dedent('''
 			namespace['__file__'] = {fp!r}
 			{xtype}({cmd!r}, namespace, namespace)
 		else:
-			{xtype}({cmd!r})
+			{xtype}({cmd!r}, __main__.__dict__, __main__.__dict__)
 	except:
 		traceback.print_exc() 
 	finally:
