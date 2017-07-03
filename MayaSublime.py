@@ -233,7 +233,21 @@ def settings_obj():
 	return sublime.load_settings("MayaSublime.sublime-settings")
 
 
+_IS_SYNCING = False
+
 def sync_settings():
+	global _IS_SYNCING
+	if _IS_SYNCING:
+		return
+	
+	_IS_SYNCING = True
+	try:
+		_sync_settings()
+	finally:
+		_IS_SYNCING = False
+
+		
+def _sync_settings():
 	so = settings_obj()
 
 	_settings['host']           = so.get('maya_hostname')
