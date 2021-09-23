@@ -282,9 +282,17 @@ PY_CMD_TEMPLATE = textwrap.dedent('''
 
 		if {ns}:
 			namespace['__file__'] = {fp!r}
-			{xtype}({cmd!r}, namespace, namespace)
 		else:
-			{xtype}({cmd!r}, __main__.__dict__, __main__.__dict__)
+			namespace = __main__.__dict__
+
+		if {xtype!r} == "exec":
+			exec({cmd!r}, namespace, namespace)
+
+		else:
+			with open({fp!r}) as _fp:
+				_code = compile(_fp.read(), {fp!r}, 'exec')
+				exec(_code, namespace, namespace)
+				
 	except:
 		traceback.print_exc() 
 	finally:
