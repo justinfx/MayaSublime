@@ -1,14 +1,11 @@
 # ST2/ST3 compat
 from __future__ import print_function
 
-import os
 import re
 import sys
 import time
 import uuid
-import errno
 import socket
-import os.path
 import textwrap
 import threading 
 import traceback
@@ -92,11 +89,9 @@ class send_to_mayaCommand(sublime_plugin.TextCommand):
 			print('No Maya-Recognized Language Found')
 			return
 
-		isPython = (lang=='python')
-
 		# Apparently ST3 doesn't always sync up its latest 
 		# plugin settings?
-		if _settings['host'] is None:
+		if not _settings['host']:
 			sync_settings()
 
 		# Check the current selection size to determine 
@@ -183,7 +178,7 @@ def _send_to_maya(cmd, lang='python', wrap=True, quiet=False):
 	"""
 	Send stringified Python code to Maya, to be executed. 
 	"""
-	if _settings['host'] is None:
+	if not _settings['host']:
 		sync_settings()
 		
 	host = _settings['host']
@@ -250,14 +245,14 @@ def sync_settings():
 def _sync_settings():
 	so = settings_obj()
 
-	_settings['host']           = so.get('maya_hostname')
-	_settings['py_port']        = so.get('python_command_port')
-	_settings['mel_port']       = so.get('mel_command_port')
-	_settings['strip_comments'] = so.get('strip_sending_comments')
-	_settings['no_collisions']  = so.get('no_collisions')
-	_settings['maya_output']    = so.get('receive_maya_output')
-	_settings['undo']           = so.get('create_undo')
-
+	_settings['host']           = so.get('maya_hostname', _settings['host'])
+	_settings['py_port']        = so.get('python_command_port', _settings['py_port'])
+	_settings['mel_port']       = so.get('mel_command_port', _settings['mel_port']  )
+	_settings['strip_comments'] = so.get('strip_sending_comments', _settings['strip_comments'])
+	_settings['no_collisions']  = so.get('no_collisions', _settings['no_collisions'])
+	_settings['maya_output']    = so.get('receive_maya_output', _settings['maya_output'])
+	_settings['undo']           = so.get('create_undo', _settings['undo'] )
+	
 	MayaReader._st2_remove_reader()
 
 	if _settings['maya_output'] is not None:
