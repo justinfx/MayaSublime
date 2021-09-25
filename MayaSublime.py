@@ -309,9 +309,12 @@ import socket
 import maya.OpenMaya
 
 try:
-	from cStringIO import StringIO
+	from io import StringIO
 except ImportError:
-	from StringIO import StringIO
+	try:
+		from cStringIO import StringIO
+	except ImportError:
+		from StringIO import StringIO
 
 if '_MayaSublime_ScriptEditorOutput_CID' not in globals():
 	_MayaSublime_ScriptEditorOutput_CID = None
