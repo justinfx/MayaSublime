@@ -289,7 +289,7 @@ PY_CMD_TEMPLATE = textwrap.dedent('''
 			exec({cmd!r}, namespace, namespace)
 
 		else:
-			with open({fp!r}, 'rb') as _fp:
+			with open({fp!r}, encoding='utf-8') as _fp:
 				_code = compile(_fp.read(), {fp!r}, 'exec')
 				exec(_code, namespace, namespace)
 				
