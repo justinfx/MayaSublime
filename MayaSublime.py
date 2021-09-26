@@ -289,7 +289,7 @@ PY_CMD_TEMPLATE = textwrap.dedent('''
 			exec({cmd!r}, namespace, namespace)
 
 		else:
-			with open({fp!r}) as _fp:
+			with open({fp!r}, encoding='utf-8') as _fp:
 				_code = compile(_fp.read(), {fp!r}, 'exec')
 				exec(_code, namespace, namespace)
 				
@@ -309,9 +309,12 @@ import socket
 import maya.OpenMaya
 
 try:
-	from cStringIO import StringIO
+	from io import StringIO
 except ImportError:
-	from StringIO import StringIO
+	try:
+		from cStringIO import StringIO
+	except ImportError:
+		from StringIO import StringIO
 
 if '_MayaSublime_ScriptEditorOutput_CID' not in globals():
 	_MayaSublime_ScriptEditorOutput_CID = None
@@ -386,13 +389,15 @@ def _MayaSublime_streamScriptEditor(enable, host="127.0.0.1", port=5123, quiet=F
 					return 
 
 				try:
-					_MayaSublime_SOCK.sendto(part, (host, port))
+					_MayaSublime_SOCK.sendto(_py_str(part), (host, port))
 
 				except Exception as e:
 					if e.errno == errno.EMSGSIZE:
 						# We have hit a message size limit. 
 						# Scale down and try the packet again
 						bufsize /= 2
+						if bufsize < 1:
+							raise
 						buf.seek(pos)
 						continue 
 					# Some other error
