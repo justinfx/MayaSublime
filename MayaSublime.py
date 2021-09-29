@@ -271,6 +271,12 @@ PY_CMD_TEMPLATE = textwrap.dedent('''
 
 	import maya.cmds
 
+	def _open(f):
+		try:
+			return open(f, encoding='utf-8')
+		except TypeError:
+			return open(f)
+
 	namespace = __main__.__dict__.get('_sublime_SendToMaya_plugin')
 	if not namespace:
 		namespace = __main__.__dict__.copy()
@@ -289,7 +295,7 @@ PY_CMD_TEMPLATE = textwrap.dedent('''
 			exec({cmd!r}, namespace, namespace)
 
 		else:
-			with open({fp!r}, encoding='utf-8') as _fp:
+			with _open({fp!r}) as _fp:
 				_code = compile(_fp.read(), {fp!r}, 'exec')
 				exec(_code, namespace, namespace)
 				
