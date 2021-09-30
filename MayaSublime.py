@@ -351,6 +351,12 @@ def _MayaSublime_streamScriptEditor(enable, host="127.0.0.1", port=5123, quiet=F
 
 	buf = StringIO()
 
+	def _enc(s):
+		try:
+			return s.encode('utf-8')
+		except AttributeError:
+			return s
+
 	def _streamToMayaSublime(msg, msgType, *args): 
 		buf.seek(0)
 		buf.truncate()
@@ -395,7 +401,7 @@ def _MayaSublime_streamScriptEditor(enable, host="127.0.0.1", port=5123, quiet=F
 					return 
 
 				try:
-					_MayaSublime_SOCK.sendto(_py_str(part), (host, port))
+					_MayaSublime_SOCK.sendto(_enc(part), (host, port))
 
 				except Exception as e:
 					if e.errno == errno.EMSGSIZE:
