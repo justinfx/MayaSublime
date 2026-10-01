@@ -10,8 +10,6 @@ import textwrap
 import threading 
 import traceback
 
-from telnetlib import Telnet
-
 import sublime, sublime_plugin
 
 
@@ -193,8 +191,8 @@ def _send_to_maya(cmd, lang='python', wrap=True, quiet=False):
 	c = None
 
 	try:
-		c = Telnet(host, int(port), timeout=3)
-		c.write(_py_str(cmd))
+		c = socket.create_connection((host, int(port)), timeout=3)
+		c.sendall(_py_str(cmd))
 
 	except Exception:
 		e = sys.exc_info()[1]

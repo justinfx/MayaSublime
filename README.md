@@ -1,5 +1,5 @@
 # MayaSublime
-### A Sublime Text 2/3 plugin
+### A Sublime Text 2/3/4 plugin
 
 Send selected MEL/Python code snippets or whole files to Maya via commandPort
 
@@ -21,7 +21,7 @@ https://packagecontrol.io/packages/MayaSublime
 
 **Manual install**
 
-1. clone this repo into the `SublimeText2/3 -> Preference -> Browse Packages` directory:  
+1. clone this repo into the `SublimeText2/3/4 -> Preference -> Browse Packages` directory:  
 `git clone git://github.com/justinfx/MayaSublime.git`
 
 2. Edit the `MayaSublime.sublime-settings` file, setting the port to match the commandPorts you have configured in Maya
